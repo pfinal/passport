@@ -40,7 +40,7 @@ class TokenService
      * @param $password
      * @return string
      */
-    public function createToken($account, $password)
+    public function tokenCreate($account, $password)
     {
         // 识别帐号是: 手机|邮箱|用户名，生成查询条件
         $condition = $this->buildQueryCondition($account);

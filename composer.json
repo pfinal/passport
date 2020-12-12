@@ -7,7 +7,7 @@
         "source": "https://github.com/pfinal/passport"
     },
     "require": {
-        "php": ">=5.3",
+        "php": ">=5.4",
         "firebase/php-jwt": "^5.2"
     },
     "autoload": {
