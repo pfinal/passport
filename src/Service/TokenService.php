@@ -24,8 +24,8 @@ class TokenService
     public static $passwordHash = 'password_hash';
 
     // 配置
-    public static $passwordHashType = 'md5salt';
-    public static $tokenType = 'jwt';
+    public static $passwordHashType = 'md5salt'; // md5salt|php_password_hash
+    public static $tokenType = 'jwt';  // jwt|store
     public static $tokenExpire = 2592000; // 30天
 
     public function __construct(Store $db)
