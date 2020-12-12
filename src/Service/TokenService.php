@@ -3,7 +3,7 @@
 namespace PFinal\Passport\Service;
 
 use Firebase\JWT\JWT;
-use PFinal\Passport\Dao\TokenDB;
+use PFinal\Passport\Dao\Store;
 use PFinal\Passport\Exception\InvalidAccountException;
 use PFinal\Passport\Exception\InvalidJwtKeyException;
 use PFinal\Passport\Exception\InvalidPasswordException;
@@ -28,7 +28,7 @@ class TokenService
     public static $tokenType = 'jwt';
     public static $tokenExpire = 2592000; // 30天
 
-    public function __construct(TokenDB $db)
+    public function __construct(Store $db)
     {
         $this->db = $db;
     }
@@ -121,7 +121,7 @@ class TokenService
     {
         switch ($type) {
             case 'php_password_hash':
-                return password_hash($password, PASSWORD_DEFAULT);
+                return password_hash($password, PASSWORD_BCRYPT);
             case 'md5salt':
             default:
                 $salt = substr(md5(uniqid(true)), rand(0, 10), 10);

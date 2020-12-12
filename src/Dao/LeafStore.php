@@ -4,7 +4,7 @@ namespace PFinal\Passport\Dao;
 
 use Leaf\DB;
 
-class TokenDB
+class LeafStore implements Store
 {
     /**
      * 查询用户
