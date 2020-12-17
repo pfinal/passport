@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS oauth(
   `openid` VARCHAR(100) NOT NULL DEFAULT '',
   `user_id` INT NOT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT,
+  `updated_at` DATETIME NOT NULL,
   unique (appid, openid, platform, user_id),
   KEY ind_user(user_id, platform)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1001 COMMENT='OAuth';

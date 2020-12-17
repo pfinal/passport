@@ -64,7 +64,7 @@ class LeafStore implements Store
      */
     public function findUserIdByOpenid($platform, $appid, $openid)
     {
-        $arr = DB::table('oauth')->where("platform=? AND appid=? AND openid=?", [$platform, $appid, $openid])->find();
+        $arr = DB::table('oauth')->where("platform=? AND appid=? AND openid=?", [$platform, $appid, $openid])->findOne();
         if ($arr == null) {
             return null;
         }

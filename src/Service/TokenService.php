@@ -76,7 +76,7 @@ class TokenService
         $userId = $this->db->findUserIdByOpenid($platform, $appid, $openid);
 
         if ($userId == null) {
-            throw new InvalidAccountException();
+            throw new InvalidOpenidException();
         }
 
         return $this->makeToken($userId, [], static::$tokenType);
