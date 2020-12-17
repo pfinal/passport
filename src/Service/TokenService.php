@@ -8,6 +8,7 @@ use PFinal\Passport\Exception\InvalidAccountException;
 use PFinal\Passport\Exception\InvalidJwtKeyException;
 use PFinal\Passport\Exception\InvalidPasswordException;
 use PFinal\Passport\Exception\InvalidTokenException;
+use PFinal\Passport\Exception\InvalidOpenidException;
 use PFinal\Passport\Util\Str;
 
 /**
