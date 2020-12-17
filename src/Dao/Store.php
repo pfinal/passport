@@ -38,4 +38,14 @@ interface Store
      * @return int
      */
     public function deleteExpireToken($time);
+
+    /**
+     * 根据Openid查询用户Id
+     *
+     * @param $platform
+     * @param $appid
+     * @param $openid
+     * @return string|null
+     */
+    public function findUserIdByOpenid($platform, $appid, $openid);
 }

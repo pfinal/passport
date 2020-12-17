@@ -55,4 +55,20 @@ class LeafStore implements Store
     {
         return DB::table('token')->where("created_at<?", [$time])->delete();
     }
+
+    /**
+     * @param $platform
+     * @param $appid
+     * @param $openid
+     * @return string|null
+     */
+    public function findUserIdByOpenid($platform, $appid, $openid)
+    {
+        $arr = DB::table('oauth')->where("platform=? AND appid=? AND openid=?", [$platform, $appid, $openid])->find();
+        if ($arr == null) {
+            return null;
+        }
+
+        return (string)$arr['user_id'];
+    }
 }
