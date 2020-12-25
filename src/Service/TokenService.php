@@ -4,6 +4,7 @@ namespace PFinal\Passport\Service;
 
 use Firebase\JWT\JWT;
 use PFinal\Passport\Dao\Store;
+use PFinal\Passport\Entity\Token;
 use PFinal\Passport\Exception\InvalidAccountException;
 use PFinal\Passport\Exception\InvalidJwtKeyException;
 use PFinal\Passport\Exception\InvalidPasswordException;
@@ -40,9 +41,9 @@ class TokenService
      *
      * @param $account
      * @param $password
-     * @return string
+     * @return Token
      */
-    public function tokenCreate($account, $password)
+    public function tokenCreateByAccount($account, $password)
     {
         // 识别帐号是: 手机|邮箱|用户名，生成查询条件
         $condition = $this->buildQueryCondition($account);
@@ -59,7 +60,7 @@ class TokenService
             throw new InvalidPasswordException();
         }
 
-        return $this->makeToken($user['id'], [], static::$tokenType);
+        return $this->tokenCreate($user['id'], [], static::$tokenType);
     }
 
     /**
@@ -69,7 +70,7 @@ class TokenService
      * @param $appid
      * @param $openid
      *
-     * @return string
+     * @return Token
      */
     public function tokenCreateByOpenid($platform, $appid, $openid)
     {
@@ -80,7 +81,7 @@ class TokenService
             throw new InvalidOpenidException();
         }
 
-        return $this->makeToken($userId, [], static::$tokenType);
+        return $this->tokenCreate($userId, [], static::$tokenType);
     }
 
     /**
@@ -88,14 +89,15 @@ class TokenService
      *
      * @param $token
      * @param string $type
-     * @return array  ['user_id' => 'xx']
+     * @return Token
      */
     public function tokenVerify($token, $type = 'jwt')
     {
         if ($type === 'jwt') {
             JWT::$leeway = 60 * 3; // 允许的服务器之间时间差 秒
             try {
-                return (array)JWT::decode($token, $this->getJwtKey(), array('HS256'));
+                $info = (array)JWT::decode($token, $this->getJwtKey(), array('HS256'));
+                return new Token($info['user_id'], $token);
             } catch (\Exception $e) {
                 // nothing to do
             }
@@ -119,7 +121,7 @@ class TokenService
             throw new InvalidTokenException();
         }
 
-        return ['user_id' => (string)$tokenInfo['user_id']];
+        return new Token($tokenInfo['user_id'], $token);
     }
 
     /**
@@ -183,10 +185,13 @@ class TokenService
      * @param $userId
      * @param array $payload
      * @param string $type
-     * @return string
+     * @return Token
      */
-    protected function makeToken($userId, array $payload = [], $type = 'jwt')
+    public function tokenCreate($userId, array $payload = [], $type = 'jwt')
     {
+        $now = time();
+        $exp = $now + static::$tokenExpire;
+
         if ($type === 'jwt') {
             /*
                 iss: jwt签发者
@@ -198,20 +203,19 @@ class TokenService
                 jti: jwt的唯一身份标识，主要用来作为一次性token,从而回避重放攻击
             */
 
-            $now = time();
             $payload += array(
                 "iat" => $now,
-                "exp" => $now + static::$tokenExpire,
+                "exp" => $exp,
                 "user_id" => (string)$userId,
             );
 
-            return JWT::encode($payload, $this->getJwtKey());
+            return new Token($userId, JWT::encode($payload, $this->getJwtKey()), $exp);
         }
 
         $token = strtolower(str_replace('-', '', Str::guid()));
         $this->db->saveToken(['token' => $token, 'user_id' => $userId, 'created_at' => @date('Y-m-d H:i:s')]);
 
-        return $token;
+        return new Token($userId, $token, $exp);
     }
 
     /**
