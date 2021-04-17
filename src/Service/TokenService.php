@@ -104,7 +104,7 @@ class TokenService
                     $user = $this->db->findUser(['id' => $info['user_id']]);
 
                     // 如果token签发时间早于最近一次修改密码的时间，则token无效
-                    if (strtotime($user[static::$changePasswordAt]) > $info['iat']) {
+                    if ($user[static::$changePasswordAt] !== null && strtotime($user[static::$changePasswordAt]) > $info['iat']) {
                         throw new InvalidTokenException();
                     }
                 }
