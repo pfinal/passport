@@ -25,6 +25,7 @@ class TokenService
     public static $username = 'username';
     public static $email = 'email';
     public static $passwordHash = 'password_hash';
+    public static $changePasswordAt = 'change_password_at'; // yyyy-mm-dd hh:ii:ss
 
     // 配置
     public static $passwordHashType = 'md5salt'; // md5salt|php_password_hash
@@ -89,18 +90,21 @@ class TokenService
      *
      * @param $token
      * @param string $type
-     * @param string $changePasswordAt 最近一次修改密码的时间 yyyy-mm-dd hh:ii:ss 如果token签发时间早于这个时间，则无效
+     * @param bool $checkChangePasswordTime 是否检查修改密码的时间
      * @return Token
      */
-    public function tokenVerify($token, $type = 'jwt', $changePasswordAt = null)
+    public function tokenVerify($token, $type = 'jwt', $checkChangePasswordTime = false)
     {
         if ($type === 'jwt') {
             JWT::$leeway = 60 * 3; // 允许的服务器之间时间差 秒
             try {
                 $info = (array)JWT::decode($token, $this->getJwtKey(), array('HS256'));
 
-                if (!empty($changePasswordAt)) {
-                    if (strtotime($changePasswordAt) > $info['iat']) {
+                if ($checkChangePasswordTime) {
+                    $user = $this->db->findUser(['id' => $info['user_id']]);
+
+                    // 如果token签发时间早于最近一次修改密码的时间，则token无效
+                    if (strtotime($user[static::$changePasswordAt]) > $info['iat']) {
                         throw new InvalidTokenException();
                     }
                 }
