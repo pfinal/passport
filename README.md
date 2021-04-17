@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `email` varchar(255) UNIQUE COMMENT '邮箱',
   `mobile` varchar(50) UNIQUE COMMENT '手机',
   `password_hash` varchar(255) NOT NULL DEFAULT '',
+  `change_password_at` DEFAULT NULL COMMENT '修改密码时间',
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='User';
 
