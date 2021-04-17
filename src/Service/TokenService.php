@@ -89,7 +89,7 @@ class TokenService
      *
      * @param $token
      * @param string $type
-     * @param string $changePasswordAt 最近一次修改密码的时间 yyyy-mm-dd hh:ii:ss
+     * @param string $changePasswordAt 最近一次修改密码的时间 yyyy-mm-dd hh:ii:ss 如果token签发时间早于这个时间，则无效
      * @return Token
      */
     public function tokenVerify($token, $type = 'jwt', $changePasswordAt = null)
