@@ -101,9 +101,12 @@ class TokenService
                 $info = (array)JWT::decode($token, $this->getJwtKey(), array('HS256'));
 
                 if ($checkChangePasswordTime) {
-                    $user = $this->db->findUser(['id' => $info['user_id']]);
+                    if (empty($info['iat'])) {
+                        throw new InvalidTokenException();
+                    }
 
                     // 如果token签发时间早于最近一次修改密码的时间，则token无效
+                    $user = $this->db->findUser(['id' => $info['user_id']]);
                     if ($user[static::$changePasswordAt] !== null && strtotime($user[static::$changePasswordAt]) > $info['iat']) {
                         throw new InvalidTokenException();
                     }
