@@ -89,14 +89,22 @@ class TokenService
      *
      * @param $token
      * @param string $type
+     * @param string $changePasswordAt 最近一次修改密码的时间 yyyy-mm-dd hh:ii:ss
      * @return Token
      */
-    public function tokenVerify($token, $type = 'jwt')
+    public function tokenVerify($token, $type = 'jwt', $changePasswordAt = null)
     {
         if ($type === 'jwt') {
             JWT::$leeway = 60 * 3; // 允许的服务器之间时间差 秒
             try {
                 $info = (array)JWT::decode($token, $this->getJwtKey(), array('HS256'));
+
+                if (!empty($changePasswordAt)) {
+                    if (strtotime($changePasswordAt) > $info['iat']) {
+                        throw new InvalidTokenException();
+                    }
+                }
+
                 return new Token($info['user_id'], $token);
             } catch (\Exception $e) {
                 // nothing to do
