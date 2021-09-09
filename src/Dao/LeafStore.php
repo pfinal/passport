@@ -28,10 +28,10 @@ class LeafStore implements Store
 
     /**
      * 查询Token信息
-     * @param array $token
+     * @param string $token
      * @return array|null
      */
-    public function findToken(array $token)
+    public function findToken($token)
     {
         return DB::table('token')->where(['token' => $token])->findOne();
     }

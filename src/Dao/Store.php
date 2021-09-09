@@ -20,10 +20,10 @@ interface Store
 
     /**
      * 查询Token信息
-     * @param array $token
+     * @param string $token
      * @return array|null
      */
-    public function findToken(array $token);
+    public function findToken($token);
 
     /**
      * 删除token
